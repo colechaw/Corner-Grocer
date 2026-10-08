@@ -9,6 +9,7 @@ class ItemTracker {
 		void printMenu();
 		void loadFile(std::string fileName);
 		int searchForItem(std::string itemName);
+		void printItemByName(std::string intemName);
 
 	private:
 		std::map<std::string, int> inventory_;

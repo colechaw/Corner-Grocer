@@ -20,6 +20,7 @@ int validateInput(std::string prompt);
 int main() {
 	int userSelection = 0;
 	ItemTracker itemTracker;
+	std::string item;
 
 	itemTracker.loadFile("items.txt");
 
@@ -32,6 +33,12 @@ int main() {
 				break;
 
 			case 1:
+
+				std::cout << "Type the item name: ";
+				std::cin >> item;
+
+				itemTracker.printItemByName(item);
+				pause("Press Enter to return to main menu...");
 				break;
 
 			case 2:

@@ -31,6 +31,8 @@ void ItemTracker::loadFile(std::string fileName) {
 		std::cout << "Could NOT load.\n\n";
 	}
 
+	inFS.close();
+
 	saveBackup(); // Create Dat File
 
 }
@@ -55,6 +57,23 @@ void ItemTracker::saveBackup() {
 	else {
 		std::cout << "Could NOT save.\n\n";
 	}
+}
+
+void ItemTracker::printItemByName(std::string itemName) {
+
+	auto item = inventory_.find(itemName);
+
+	// Compare the index of item against the last index of the inventory_
+	// If those match, the item is empty, return a 'Item not found' message
+	if (item != inventory_.end()) {
+		std::cout << itemName << ": " << item->second << std::endl << std::endl;
+	}
+	else
+	{
+		std::cout << "Item not found\n\n";
+	}
+
+
 }
 
 void ItemTracker::printList() {
