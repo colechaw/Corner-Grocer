@@ -72,8 +72,6 @@ void ItemTracker::printItemByName(std::string itemName) {
 	{
 		std::cout << "Item not found\n\n";
 	}
-
-
 }
 
 void ItemTracker::printList() {
@@ -87,6 +85,21 @@ void ItemTracker::printHistogram() {
 	std::cout << "\bHistogram" << std::endl;
 
 	for (const auto& item : inventory_) {
-		std::cout << " " << item.first << ": " << std::string(item.second, '*') << std::endl;
+		std::cout << " " << 
+			item.first << ": " << 
+			TextColor::changeColor(calculateColor(item.second), std::string(item.second, '*')) << 
+			std::endl;
+	}
+}
+
+Color ItemTracker::calculateColor(int quantity) {
+	if (quantity < 4) {
+		return Color::Red;
+	}
+	if (quantity < 7) {
+		return Color::Yellow;
+	}
+	else {
+		return Color::Green;
 	}
 }

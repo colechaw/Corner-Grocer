@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <map>
+#include "Color.h"
 
 class ItemTracker {
 	public:
@@ -10,6 +11,7 @@ class ItemTracker {
 		void loadFile(std::string fileName);
 		int searchForItem(std::string itemName);
 		void printItemByName(std::string intemName);
+		Color calculateColor(int quantity);
 
 	private:
 		std::map<std::string, int> inventory_;
