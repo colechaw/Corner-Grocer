@@ -9,7 +9,6 @@ class ItemTracker {
 		void printHistogram();
 		void printMenu();
 		void loadFile(std::string fileName);
-		int searchForItem(std::string itemName);
 		void printItemByName(std::string intemName);
 		Color calculateColor(int quantity);
 

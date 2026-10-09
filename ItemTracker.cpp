@@ -1,6 +1,10 @@
 #include "ItemTracker.h"
 #include <iostream>
 #include <fstream>
+#include <iomanip>
+
+using enum Color;
+TextColor TC;
 
 void ItemTracker::printMenu() {
 	std::cout << "Welcome to Corner Grocer, select from the following options:\n" <<
@@ -60,46 +64,76 @@ void ItemTracker::saveBackup() {
 }
 
 void ItemTracker::printItemByName(std::string itemName) {
-
 	auto item = inventory_.find(itemName);
 
 	// Compare the index of item against the last index of the inventory_
 	// If those match, the item is empty, return a 'Item not found' message
 	if (item != inventory_.end()) {
-		std::cout << itemName << ": " << item->second << std::endl << std::endl;
+		std::cout << "  " << itemName << ": " << item->second << std::endl << std::endl;
 	}
 	else
 	{
-		std::cout << "Item not found\n\n";
+		std::cout << "  Item not found\n\n";
 	}
 }
 
+// Prints the list with numeric count
 void ItemTracker::printList() {
-	std::cout << "\bList" << std::endl;
+	std::cout << "List\n" << std::endl;
 
 	for (const auto& item : inventory_) {
-		std::cout << "  " << item.first << ": " << item.second << std::endl;
+		std::cout << " "
+			<< std::left << std::setw(15) << item.first
+			<< ": "
+			<< item.second
+			<< std::endl;
 	}
 }
+
+
+// *****************************
+// *****************************
+// Sort by value high to low
+// *****************************
+// *****************************
+
+
+
+
+// Prints histogram with * for each count
 void ItemTracker::printHistogram() {
-	std::cout << "\bHistogram" << std::endl;
+	std::string name;
+	std::string line;
+	int count;
+
+	std::cout << "Histogram\n" << std::endl;
 
 	for (const auto& item : inventory_) {
-		std::cout << " " << 
-			item.first << ": " << 
-			TextColor::changeColor(calculateColor(item.second), std::string(item.second, '*')) << 
-			std::endl;
+		name = item.first;
+		count = item.second;
+		line = std::string(count, '*');
+		Color color = calculateColor(count);
+
+		std::cout << " "
+			<< std::left << std::setw(15) << name
+			<< ": "
+			<< TC.changeColor(color, line)
+			<< std::endl;
 	}
 }
 
+/*
+Ternary operator, accept count and return the color to
+quickly see if they have a low count in the store
+*/
 Color ItemTracker::calculateColor(int quantity) {
-	if (quantity < 4) {
-		return Color::Red;
-	}
-	if (quantity < 7) {
-		return Color::Yellow;
-	}
-	else {
-		return Color::Green;
-	}
+	return quantity < 4 ? Red :
+		quantity < 7 ? Yellow : 
+		Green;
+}
+
+// Accept input and return as all lower case to prevent
+// errors in user capitaliztion
+std::string toLower(std::string originalText) {
+	return "";
 }

@@ -33,22 +33,22 @@ int main() {
 				break;
 
 			case 1:
-
-				std::cout << "Type the item name: ";
+				std::cout << "Seach for Item\n" << std::endl;
+				std::cout << " Type the item name: ";
 				std::cin >> item;
 
 				itemTracker.printItemByName(item);
-				pause("Press Enter to return to main menu...");
+				pause("\nPress Enter to return to main menu...");
 				break;
 
 			case 2:
 				itemTracker.printList();
-				pause("Press Enter to return to main menu...");
+				pause("\nPress Enter to return to main menu...");
 				break;
 
 			case 3:
 				itemTracker.printHistogram();
-				pause("Press Enter to return to main menu...");
+				pause("\nPress Enter to return to main menu...");
 				break;
 
 			case 4:
