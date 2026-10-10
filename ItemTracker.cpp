@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <cctype>
 
 using enum Color;
 TextColor TC;
@@ -63,7 +64,14 @@ void ItemTracker::saveBackup() {
 	}
 }
 
-void ItemTracker::printItemByName(std::string itemName) {
+
+void ItemTracker::printItemByName() {
+	std::string itemName;
+
+	std::cout << "Seach for Item\n" << std::endl;
+	std::cout << " Type the item name: ";
+	std::cin >> itemName;
+
 	auto item = inventory_.find(itemName);
 
 	// Compare the index of item against the last index of the inventory_
@@ -77,16 +85,32 @@ void ItemTracker::printItemByName(std::string itemName) {
 	}
 }
 
+
 // Prints the list with numeric count
 void ItemTracker::printList() {
+	
+	// Title
 	std::cout << "List\n" << std::endl;
 
-	for (const auto& item : inventory_) {
+	// Print each line, name and then the number on hand.
+	// Center all numbers on each other for readability
+	for (const auto& [name, quantity] : inventory_) {
 		std::cout << " "
-			<< std::left << std::setw(15) << item.first
-			<< ": "
-			<< item.second
-			<< std::endl;
+				  << std::left << std::setw(15) << name
+				  << ": " << quantity
+				  << "\n";
+	}
+	
+}
+
+// Accept the user input and evaluate which report to return
+void ItemTracker::runReport(int userInput) {
+	switch (userInput) {
+		case 1:	printItemByName(); break;
+		case 2:	printList(); break;
+		case 3:	printHistogram(); break;
+		case 4:	std::exit(0); // Exit program, no break required
+		default: printMenu();
 	}
 }
 
@@ -102,38 +126,66 @@ void ItemTracker::printList() {
 
 // Prints histogram with * for each count
 void ItemTracker::printHistogram() {
-	std::string name;
-	std::string line;
-	int count;
-
+	// Title
 	std::cout << "Histogram\n" << std::endl;
 
-	for (const auto& item : inventory_) {
-		name = item.first;
-		count = item.second;
-		line = std::string(count, '*');
-		Color color = calculateColor(count);
+
+	for (const auto& [name, quantity] : inventory_) {
+
+		
+		//Color color = calculateColor(quantity);
+		std::string line = std::string(quantity, '*');
+		line = colorLine(line, quantity);
 
 		std::cout << " "
 			<< std::left << std::setw(15) << name
-			<< ": "
-			<< TC.changeColor(color, line)
-			<< std::endl;
+			<< ": " << line
+			<< "\n";
 	}
 }
+
+
 
 /*
 Ternary operator, accept count and return the color to
 quickly see if they have a low count in the store
 */
-Color ItemTracker::calculateColor(int quantity) {
-	return quantity < 4 ? Red :
+std::string ItemTracker::colorLine(std::string text, int quantity) {
+
+	auto theColor = quantity < 4 ? Red :
 		quantity < 7 ? Yellow : 
 		Green;
+
+	return TC.changeColor(theColor, text);
 }
+
+
 
 // Accept input and return as all lower case to prevent
 // errors in user capitaliztion
 std::string toLower(std::string originalText) {
-	return "";
+	std::string result;
+
+	for (char c : originalText) {
+		result += std::tolower(c);
+	}
+
+	return result;
+}
+
+std::string toTitle(std::string originalText) {
+
+	// Start with the toLower() we made so we do not need
+	// to loop here.
+	originalText = toLower(originalText);
+
+	// Check to make sure it's not an empty string before
+	// we try to manipulate addresses that do not exist
+	if (originalText.empty())
+		return originalText;
+	
+	// The first letter to uppercase, 
+	originalText.at(0) = std::toupper(static_cast<unsigned char>(originalText.at(0)));
+
+	return originalText;
 }

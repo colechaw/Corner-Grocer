@@ -8,8 +8,8 @@
  */
 
 #include <iostream>
-#include "ItemTracker.h"
 #include <limits>
+#include "ItemTracker.h"
 
 // Prototype
 void clearScreen();
@@ -26,42 +26,40 @@ int main() {
 
 	while (userSelection != 4) {
 
-		clearScreen();
-
-		switch (userSelection) {
-			case 0:
-				break;
-
-			case 1:
-				std::cout << "Seach for Item\n" << std::endl;
-				std::cout << " Type the item name: ";
-				std::cin >> item;
-
-				itemTracker.printItemByName(item);
-				pause("\nPress Enter to return to main menu...");
-				break;
-
-			case 2:
-				itemTracker.printList();
-				pause("\nPress Enter to return to main menu...");
-				break;
-
-			case 3:
-				itemTracker.printHistogram();
-				pause("\nPress Enter to return to main menu...");
-				break;
-
-			case 4:
-				return 0;
-
-			default:
-				itemTracker.printMenu();
-				error("Enter a valid choice: ");
-		}
-
-		clearScreen();
+		
+		clearScreen(); // Clear to display the menu
 		itemTracker.printMenu();
 		userSelection = validateInput("Enter menu choice: ");
+
+		clearScreen(); // Clear to display report
+		itemTracker.runReport(userSelection);
+		pause("\nPress Enter to return to main menu...");
+		//switch (userSelection) {
+		//	case 0:
+		//		break;
+		//	case 1:
+		//		std::cout << "Seach for Item\n" << std::endl;
+		//		std::cout << " Type the item name: ";
+		//		std::cin >> item;
+		//		itemTracker.printItemByName(item);
+		//		pause("\nPress Enter to return to main menu...");
+		//		break;
+		//	case 2:
+		//		itemTracker.printList();
+		//		pause("\nPress Enter to return to main menu...");
+		//		break;
+		//	case 3:
+		//		itemTracker.printHistogram();
+		//		pause("\nPress Enter to return to main menu...");
+		//		break;
+		//	case 4:
+		//		return 0; // Exit program
+		//	default:
+		//		itemTracker.printMenu();
+		//		error("Enter a valid choice: ");
+		//}
+
+		//clearScreen();
 
 	}
 

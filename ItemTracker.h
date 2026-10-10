@@ -9,8 +9,9 @@ class ItemTracker {
 		void printHistogram();
 		void printMenu();
 		void loadFile(std::string fileName);
-		void printItemByName(std::string intemName);
-		Color calculateColor(int quantity);
+		void printItemByName();
+		std::string colorLine(std::string text, int quantity);
+		void runReport(int userInput);
 
 	private:
 		std::map<std::string, int> inventory_;
