@@ -1,19 +1,20 @@
 #include "ItemTracker.h"
+#include "Color.h"
 #include <iostream>
 #include <fstream>
 #include <iomanip>
 #include <cctype>
 
 using enum Color;
-TextColor TC;
 
 void ItemTracker::printMenu() {
-	std::cout << "Welcome to Corner Grocer, select from the following options:\n" <<
+	std::cout << "Welcome to Corner Grocer, select from the following options:\n\n" <<
 		"  1. Search for product\n" <<
-		"  2. View Inventory\n" <<
+		"  2. View Inventory List\n" <<
 		"  3. View Inventory Histogram\n" <<
-		"  4. Exit\n\n";
+		"  4. Exit Program\n\n";
 }
+
 
 void ItemTracker::loadFile(std::string fileName) {
 	std::ifstream inFS;
@@ -29,7 +30,6 @@ void ItemTracker::loadFile(std::string fileName) {
 
 			// Add to map, or increase count
 			inventory_[name]++;
-
 		}
 	}
 	else {
@@ -38,11 +38,12 @@ void ItemTracker::loadFile(std::string fileName) {
 
 	inFS.close();
 
-	saveBackup(); // Create Dat File
+	saveDat(); // Create Dat File
 
 }
 
-void ItemTracker::saveBackup() {
+
+void ItemTracker::saveDat() {
 	// frequency.dat
 	std::ofstream oFS;
 
@@ -66,23 +67,27 @@ void ItemTracker::saveBackup() {
 
 
 void ItemTracker::printItemByName() {
-	std::string itemName;
 
 	std::cout << "Seach for Item\n" << std::endl;
 	std::cout << " Type the item name: ";
+
+	std::string itemName;
 	std::cin >> itemName;
 
-	auto item = inventory_.find(itemName);
+	// Define and populate a variable with the lower case name of the item searched for
+	// This allows multiple capitalization to all return the correct value
+	std::string searchName = toLower(itemName);
 
-	// Compare the index of item against the last index of the inventory_
-	// If those match, the item is empty, return a 'Item not found' message
-	if (item != inventory_.end()) {
-		std::cout << "  " << itemName << ": " << item->second << std::endl << std::endl;
+	// Loop through the inventory_ comparing the search word to the name in the map in
+	// lower case form
+	for (const auto& [name, quantity] : inventory_) {
+		if (toLower(name) == searchName) {
+			std::cout << "  " << name << ": " << quantity << std::endl << std::endl;
+			return; // Item was found, exit so the Not Found line is not printed
+		}
 	}
-	else
-	{
-		std::cout << "  Item not found\n\n";
-	}
+
+	std::cout << "  Item not found\n\n";
 }
 
 
@@ -90,7 +95,7 @@ void ItemTracker::printItemByName() {
 void ItemTracker::printList() {
 	
 	// Title
-	std::cout << "List\n" << std::endl;
+	std::cout << "Numeric List\n" << std::endl;
 
 	// Print each line, name and then the number on hand.
 	// Center all numbers on each other for readability
@@ -109,19 +114,9 @@ void ItemTracker::runReport(int userInput) {
 		case 1:	printItemByName(); break;
 		case 2:	printList(); break;
 		case 3:	printHistogram(); break;
-		case 4:	std::exit(0); // Exit program, no break required
 		default: printMenu();
 	}
 }
-
-
-// *****************************
-// *****************************
-// Sort by value high to low
-// *****************************
-// *****************************
-
-
 
 
 // Prints histogram with * for each count
@@ -145,7 +140,6 @@ void ItemTracker::printHistogram() {
 }
 
 
-
 /*
 Ternary operator, accept count and return the color to
 quickly see if they have a low count in the store
@@ -156,14 +150,13 @@ std::string ItemTracker::colorLine(std::string text, int quantity) {
 		quantity < 7 ? Yellow : 
 		Green;
 
-	return TC.changeColor(theColor, text);
+	return TextColor::changeColor(theColor, text);
 }
-
 
 
 // Accept input and return as all lower case to prevent
 // errors in user capitaliztion
-std::string toLower(std::string originalText) {
+std::string ItemTracker::toLower(std::string originalText) {
 	std::string result;
 
 	for (char c : originalText) {
@@ -171,21 +164,4 @@ std::string toLower(std::string originalText) {
 	}
 
 	return result;
-}
-
-std::string toTitle(std::string originalText) {
-
-	// Start with the toLower() we made so we do not need
-	// to loop here.
-	originalText = toLower(originalText);
-
-	// Check to make sure it's not an empty string before
-	// we try to manipulate addresses that do not exist
-	if (originalText.empty())
-		return originalText;
-	
-	// The first letter to uppercase, 
-	originalText.at(0) = std::toupper(static_cast<unsigned char>(originalText.at(0)));
-
-	return originalText;
 }
