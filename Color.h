@@ -1,3 +1,13 @@
+/*
+ * Name:        Charles Cole
+ * Course:      CS 210 - Programming Languages
+ * Date:        10/10/2026
+ * Project:     Corner Grocer
+ * Description: Load a list of products, total that list into individual
+ *              entires and allow the user to view a list by number or a
+ *          	histogram.  Save the list as frequency.dat.
+ */
+
 #pragma once
 #include <string>
 

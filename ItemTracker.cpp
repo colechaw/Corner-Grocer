@@ -1,13 +1,23 @@
-#include "ItemTracker.h"
-#include "Color.h"
+/*
+ * Name:        Charles Cole
+ * Course:      CS 210 - Programming Languages
+ * Date:        10/10/2026
+ * Project:     Corner Grocer
+ * Description: Load a list of products, total that list into individual
+ *              entires and allow the user to view a list by number or a
+ *          	histogram.  Save the list as frequency.dat.
+ */
+
 #include <iostream>
 #include <fstream>
 #include <iomanip>
 #include <cctype>
+#include "ItemTracker.h"
+#include "Color.h"
 
 using enum Color;
 
-void ItemTracker::printMenu() {
+void ItemTracker::printMenu() const {
 	std::cout << "Welcome to Corner Grocer, select from the following options:\n\n" <<
 		"  1. Search for product\n" <<
 		"  2. View Inventory List\n" <<
@@ -24,16 +34,13 @@ void ItemTracker::loadFile(std::string fileName) {
 
 	if (inFS.is_open()) {
 		std::cout << "*** File successfully loaded.\n\n";
-		while (!inFS.eof()) {
+		while (inFS >> name) {
 
 			inFS >> name;
 
 			// Add to map, or increase count
 			inventory_[name]++;
 		}
-	}
-	else {
-		std::cout << "Could NOT load.\n\n";
 	}
 
 	inFS.close();
@@ -44,13 +51,12 @@ void ItemTracker::loadFile(std::string fileName) {
 
 
 void ItemTracker::saveDat() {
-	// frequency.dat
+	
+	// Create a file 'frequency.dat' after opening a stream
 	std::ofstream oFS;
-
 	oFS.open("frequency.dat");
 
 	if (oFS.is_open()) {
-		std::cout << "*** File successfully opened.\n\n";
 
 			for (const auto& item : inventory_) {
 				oFS << item.first << " ";
@@ -58,17 +64,13 @@ void ItemTracker::saveDat() {
 			}
 
 		oFS.close();
-		std::cout << "File saved!";
-	}
-	else {
-		std::cout << "Could NOT save.\n\n";
 	}
 }
 
 
 void ItemTracker::printItemByName() {
 
-	std::cout << "Seach for Item\n" << std::endl;
+	std::cout << "Search for Item\n" << std::endl;
 	std::cout << " Type the item name: ";
 
 	std::string itemName;
@@ -82,17 +84,28 @@ void ItemTracker::printItemByName() {
 	// lower case form
 	for (const auto& [name, quantity] : inventory_) {
 		if (toLower(name) == searchName) {
-			std::cout << "  " << name << ": " << quantity << std::endl << std::endl;
+			std::cout << " " << name << ": " << quantity << std::endl;
 			return; // Item was found, exit so the Not Found line is not printed
 		}
 	}
 
-	std::cout << "  Item not found\n\n";
+	std::cout << " Item not found\n\n";
+}
+
+
+// Accept the user input and evaluate which report to return
+void ItemTracker::runReport(int userInput) {
+	switch (userInput) {
+		case 1:	printItemByName(); break;
+		case 2:	printList(); break;
+		case 3:	printHistogram(); break;
+	default: printMenu();
+	}
 }
 
 
 // Prints the list with numeric count
-void ItemTracker::printList() {
+void ItemTracker::printList() const {
 	
 	// Title
 	std::cout << "Numeric List\n" << std::endl;
@@ -108,33 +121,30 @@ void ItemTracker::printList() {
 	
 }
 
-// Accept the user input and evaluate which report to return
-void ItemTracker::runReport(int userInput) {
-	switch (userInput) {
-		case 1:	printItemByName(); break;
-		case 2:	printList(); break;
-		case 3:	printHistogram(); break;
-		default: printMenu();
-	}
-}
 
 
 // Prints histogram with * for each count
-void ItemTracker::printHistogram() {
+void ItemTracker::printHistogram() const {
 	// Title
 	std::cout << "Histogram\n" << std::endl;
 
 
 	for (const auto& [name, quantity] : inventory_) {
-
 		
-		//Color color = calculateColor(quantity);
-		std::string line = std::string(quantity, '*');
-		line = colorLine(line, quantity);
+		// Check if the inventory_ object, display meaningful 
+		// message instead of blank screen
+		////////////// Considered inventory_.size == 0 but went for 
+		////////////// the shorter way
+		if (inventory_.empty()) {
+			std::cout << "No inventory data available.\n";
+			return;
+		}
+		//std::string line = std::string(quantity, '*');
+		//line = colorizeByQuantity(line, quantity);
 
 		std::cout << " "
 			<< std::left << std::setw(15) << name
-			<< ": " << line
+			<< ": " << colorizeByQuantity(std::string(quantity, '*'), quantity)
 			<< "\n";
 	}
 }
@@ -144,7 +154,7 @@ void ItemTracker::printHistogram() {
 Ternary operator, accept count and return the color to
 quickly see if they have a low count in the store
 */
-std::string ItemTracker::colorLine(std::string text, int quantity) {
+std::string ItemTracker::colorizeByQuantity(std::string text, int quantity) const {
 
 	auto theColor = quantity < 4 ? Red :
 		quantity < 7 ? Yellow : 

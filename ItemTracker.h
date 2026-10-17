@@ -1,3 +1,13 @@
+/*
+ * Name:        Charles Cole
+ * Course:      CS 210 - Programming Languages
+ * Date:        10/10/2026
+ * Project:     Corner Grocer
+ * Description: Load a list of products, total that list into individual
+ *              entires and allow the user to view a list by number or a
+ *          	histogram.  Save the list as frequency.dat.
+ */
+
 #pragma once
 #include <string>
 #include <map>
@@ -5,9 +15,9 @@
 
 class ItemTracker {
 	public:
-		void printList();
-		void printHistogram();
-		void printMenu();
+		void printList() const;
+		void printHistogram() const;
+		void printMenu() const;
 		void printItemByName();
 		void loadFile(std::string fileName);
 		void runReport(int userInput);
@@ -17,6 +27,6 @@ class ItemTracker {
 
 		// Private Functions
 		void saveDat();
-		std::string colorLine(std::string text, int quantity);
+		std::string colorizeByQuantity(std::string text, int quantity) const;
 		std::string toLower(std::string originalText);
 };

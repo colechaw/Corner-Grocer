@@ -56,9 +56,7 @@ int validateInput(std::string prompt) {
 		if (!std::cin.fail() && userInput >= 1 && userInput <= 4) {
 			return userInput;
 		}
-		else {
 
-		}
 		error("Please enter a valid menu choice"); // Custom helper
 	}
 }
