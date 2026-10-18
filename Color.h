@@ -1,17 +1,17 @@
 /*
  * Name:        Charles Cole
  * Course:      CS 210 - Programming Languages
- * Date:        10/10/2026
- * Project:     Corner Grocer
- * Description: Load a list of products, total that list into individual
- *              entires and allow the user to view a list by number or a
- *          	histogram.  Save the list as frequency.dat.
+ * Date:        10/15/2026
+ * Project:     Corner Grocer (Custom ANSI Colorer)
+ * Description: Wrap string with ANSI color code to allow
+ *              for coloring based on quantity.
  */
 
 #pragma once
 #include <string>
 
-enum class Color { Red, Green, Yellow, Cyan, White, Reset };
+// ENUM so we don't rely on magic strings
+enum class Color { Red, Green, Yellow };
 
 // This class accepts a string, lets the user choose a color, then returns
 // the string wrapped with ANSI code.  It will change the color first and
@@ -23,7 +23,7 @@ class AnsiColor {
         // This will not print to screen, that is handled in the main().  
         // The color may be used in main or ItemTracker
         static std::string colorize(Color color, const std::string& text) {
-            return getCode(color) + text + getCode(Color::Reset);
+            return getCode(color) + text + "\033[0m";
         }
 
     private:
@@ -33,9 +33,6 @@ class AnsiColor {
                 case Color::Red:    return "\033[31m";
                 case Color::Green:  return "\033[32m";
                 case Color::Yellow: return "\033[33m";
-                case Color::Cyan:   return "\033[36m";
-                case Color::White:  return "\033[37m";
-                case Color::Reset:  return "\033[0m";
             }
 
             return "\033[0m";

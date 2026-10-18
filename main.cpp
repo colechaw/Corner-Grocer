@@ -12,6 +12,7 @@
 #include <limits>
 #include "ItemTracker.h"
 #include "Color.h"
+#include "Logger.h"
 
 // Prototype
 void clearScreen();
@@ -91,4 +92,7 @@ void error(std::string message) {
 
 	// Print a meaningful error message to help the user
 	std::cout << AnsiColor::colorize(Color::Red, message) << std::endl;
+
+	// Record in error.log
+	Logger::error("User Selection: " + message);
 }

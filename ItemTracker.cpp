@@ -16,6 +16,7 @@
 #include <sstream>
 #include "ItemTracker.h"
 #include "Color.h"
+#include "Logger.h"
 
 void ItemTracker::printMenu() const {
 	std::cout << "Welcome to Corner Grocer, select from the following options:\n\n" <<
@@ -28,33 +29,34 @@ void ItemTracker::printMenu() const {
 
 void ItemTracker::loadFile(std::string fileName) {
 	std::ifstream inFS;
-
 	std::string name;
+	int itemCount = 0;
 
 	inFS.open(fileName);
 
 	if (inFS.is_open()) {
 
-		logEvent(fileName + " successfully opened.");
+		Logger::event(fileName + " successfully opened.");
 
 		while (inFS >> name) {			
 			inventory_[name]++; // Add to map, or increase count
+			itemCount++; // keep track of each 
 		}
 
 		// Log loading results
-		if (inventory_.size() == 0) {
-			logEvent("ERROR- no items loaded.");
+		if (itemCount == 0) {
+			Logger::event("WARNING- no items loaded."); // log event
 		}
 		else {
-			logEvent(std::to_string(inventory_.size()) + " items successfully loaded.");
+			Logger::event(std::to_string(itemCount) + " items successfully parsed."); // log event
 		}
 
 		inFS.close();
-		logEvent(fileName + " closed.");
+		Logger::event(fileName + " closed.");
 		saveDat(); // Create Dat File
 	}
 	else {
-		logEvent("ERROR- unable to open " + fileName);
+		Logger::error("ERROR- unable to open " + fileName + " file");
 	}
 }
 
@@ -64,7 +66,7 @@ void ItemTracker::saveDat() {
 	// Create a file 'frequency.dat' after opening a stream
 	std::ofstream oFS;
 	oFS.open("frequency.dat");
-	logEvent("frequency.dat successfully created."); // log event
+	Logger::event("frequency.dat successfully created."); // log event
 
 	if (oFS.is_open()) {
 
@@ -74,11 +76,11 @@ void ItemTracker::saveDat() {
 			}
 
 		oFS.close();
-		logEvent(std::to_string(inventory_.size()) + " items saved."); // log event
-		logEvent("frequency.dat saved."); // log event
+		Logger::event(std::to_string(inventory_.size()) + " items saved."); // log event
+		Logger::event("frequency.dat saved."); // log event
 	}
 	else {
-		logEvent("ERROR: frequency.dat failed to open."); // log event
+		Logger::error("ERROR: frequency.dat failed to open."); // log event
 	}
 }
 
@@ -206,30 +208,4 @@ std::string ItemTracker::toLower(std::string originalText) {
 	}
 
 	return result;
-}
-
-
-// Log for file events for texting and tracking down errors
-void ItemTracker::logEvent(std::string message) {
-	std::ofstream oSteam;
-	oSteam.open("Event.log", std::ios::app);
-
-	if (oSteam.is_open()) {
-		oSteam << "[" << getTimestamp() << "] "
-			<< message << '\n';
-	}
-}
-
-
-// Helper to return time for custom event log
-std::string ItemTracker::getTimestamp() {
-	std::time_t now = std::time(nullptr);
-	std::tm localTime{};
-
-	localtime_s(&localTime, &now);
-
-	std::ostringstream stream;
-	stream << std::put_time(&localTime, "%Y-%m-%d %H:%M:%S");
-
-	return stream.str();
 }
