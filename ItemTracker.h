@@ -11,7 +11,6 @@
 #pragma once
 #include <string>
 #include <map>
-#include "Color.h"
 
 class ItemTracker {
 	public:
@@ -27,6 +26,8 @@ class ItemTracker {
 
 		// Private Functions
 		void saveDat();
+		std::string getTimestamp();
+		void logEvent(std::string message);
 		std::string colorizeByQuantity(std::string text, int quantity) const;
 		std::string toLower(std::string originalText);
 };

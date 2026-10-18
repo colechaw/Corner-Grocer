@@ -90,5 +90,5 @@ void error(std::string message) {
 	);
 
 	// Print a meaningful error message to help the user
-	std::cout << TextColor::changeColor(Color::Red, message) << std::endl;
+	std::cout << AnsiColor::colorize(Color::Red, message) << std::endl;
 }

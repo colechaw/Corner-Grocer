@@ -11,11 +11,11 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <ctime>
 #include <cctype>
+#include <sstream>
 #include "ItemTracker.h"
 #include "Color.h"
-
-using enum Color;
 
 void ItemTracker::printMenu() const {
 	std::cout << "Welcome to Corner Grocer, select from the following options:\n\n" <<
@@ -28,25 +28,34 @@ void ItemTracker::printMenu() const {
 
 void ItemTracker::loadFile(std::string fileName) {
 	std::ifstream inFS;
+
 	std::string name;
 
 	inFS.open(fileName);
 
 	if (inFS.is_open()) {
-		std::cout << "*** File successfully loaded.\n\n";
-		while (inFS >> name) {
 
-			inFS >> name;
+		logEvent(fileName + " successfully opened.");
 
-			// Add to map, or increase count
-			inventory_[name]++;
+		while (inFS >> name) {			
+			inventory_[name]++; // Add to map, or increase count
 		}
+
+		// Log loading results
+		if (inventory_.size() == 0) {
+			logEvent("ERROR- no items loaded.");
+		}
+		else {
+			logEvent(std::to_string(inventory_.size()) + " items successfully loaded.");
+		}
+
+		inFS.close();
+		logEvent(fileName + " closed.");
+		saveDat(); // Create Dat File
 	}
-
-	inFS.close();
-
-	saveDat(); // Create Dat File
-
+	else {
+		logEvent("ERROR- unable to open " + fileName);
+	}
 }
 
 
@@ -55,6 +64,7 @@ void ItemTracker::saveDat() {
 	// Create a file 'frequency.dat' after opening a stream
 	std::ofstream oFS;
 	oFS.open("frequency.dat");
+	logEvent("frequency.dat successfully created."); // log event
 
 	if (oFS.is_open()) {
 
@@ -64,6 +74,11 @@ void ItemTracker::saveDat() {
 			}
 
 		oFS.close();
+		logEvent(std::to_string(inventory_.size()) + " items saved."); // log event
+		logEvent("frequency.dat saved."); // log event
+	}
+	else {
+		logEvent("ERROR: frequency.dat failed to open."); // log event
 	}
 }
 
@@ -83,6 +98,14 @@ void ItemTracker::printItemByName() {
 	// Loop through the inventory_ comparing the search word to the name in the map in
 	// lower case form
 	for (const auto& [name, quantity] : inventory_) {
+
+		// ** Validation **
+		// Display a meaningful message rather than blank page
+		if (inventory_.empty()) {
+			std::cout << "\nNo inventory data available.\n";
+			return;
+		}
+
 		if (toLower(name) == searchName) {
 			std::cout << " " << name << ": " << quantity << std::endl;
 			return; // Item was found, exit so the Not Found line is not printed
@@ -113,6 +136,15 @@ void ItemTracker::printList() const {
 	// Print each line, name and then the number on hand.
 	// Center all numbers on each other for readability
 	for (const auto& [name, quantity] : inventory_) {
+
+
+		// ** Validation **
+		// Display a meaningful message rather than blank page
+		if (inventory_.empty()) {
+			std::cout << "\nNo inventory data available.\n";
+			return;
+		}
+
 		std::cout << " "
 				  << std::left << std::setw(15) << name
 				  << ": " << quantity
@@ -131,16 +163,12 @@ void ItemTracker::printHistogram() const {
 
 	for (const auto& [name, quantity] : inventory_) {
 		
-		// Check if the inventory_ object, display meaningful 
-		// message instead of blank screen
-		////////////// Considered inventory_.size == 0 but went for 
-		////////////// the shorter way
+		// ** Validation **
+		// Display a meaningful message rather than blank page
 		if (inventory_.empty()) {
-			std::cout << "No inventory data available.\n";
+			std::cout << "\nNo inventory data available.\n";
 			return;
 		}
-		//std::string line = std::string(quantity, '*');
-		//line = colorizeByQuantity(line, quantity);
 
 		std::cout << " "
 			<< std::left << std::setw(15) << name
@@ -150,28 +178,58 @@ void ItemTracker::printHistogram() const {
 }
 
 
+
+
 /*
 Ternary operator, accept count and return the color to
 quickly see if they have a low count in the store
 */
 std::string ItemTracker::colorizeByQuantity(std::string text, int quantity) const {
 
-	auto theColor = quantity < 4 ? Red :
-		quantity < 7 ? Yellow : 
-		Green;
+	auto color = quantity < 4 ? Color::Red :
+		quantity < 7 ? Color::Yellow : 
+		Color::Green;
 
-	return TextColor::changeColor(theColor, text);
+	return AnsiColor::colorize(color, text);
 }
 
 
 // Accept input and return as all lower case to prevent
 // errors in user capitaliztion
+////////////////// cast<> Resoning handle unexpected behavior if char is negative
 std::string ItemTracker::toLower(std::string originalText) {
+
 	std::string result;
 
-	for (char c : originalText) {
-		result += std::tolower(c);
+	for (unsigned char c : originalText) {
+		result += static_cast<char>(std::tolower(c));
 	}
 
 	return result;
+}
+
+
+// Log for file events for texting and tracking down errors
+void ItemTracker::logEvent(std::string message) {
+	std::ofstream oSteam;
+	oSteam.open("Event.log", std::ios::app);
+
+	if (oSteam.is_open()) {
+		oSteam << "[" << getTimestamp() << "] "
+			<< message << '\n';
+	}
+}
+
+
+// Helper to return time for custom event log
+std::string ItemTracker::getTimestamp() {
+	std::time_t now = std::time(nullptr);
+	std::tm localTime{};
+
+	localtime_s(&localTime, &now);
+
+	std::ostringstream stream;
+	stream << std::put_time(&localTime, "%Y-%m-%d %H:%M:%S");
+
+	return stream.str();
 }
