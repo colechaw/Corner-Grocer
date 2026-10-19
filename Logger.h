@@ -8,6 +8,7 @@
  */
 
 #pragma once
+#include <string>
 #include <ctime>
 #include <sstream>
 #include <iomanip>
@@ -15,22 +16,22 @@
 
 class Logger {
 public:
-	static void error(std::string message) {
+	static void error(const std::string& message) {
 		logEvent(message, "error.log");
 	}
 
-	static void event(std::string message) {
+	static void event(const std::string& message) {
 		logEvent(message, "event.log");
 	}
 
 private:
-	// Log for file events for texting and tracking down errors
-	static void logEvent(std::string message, std::string fileName) {
-		std::ofstream oSteam;
-		oSteam.open(fileName, std::ios::app);
+	// Log for file events for testing and tracking down errors
+	static void logEvent(const std::string& message, const std::string& fileName) {
+		std::ofstream oStream;
+		oStream.open(fileName, std::ios::app);
 
-		if (oSteam.is_open()) {
-			oSteam << "[" << getTimestamp() << "] "
+		if (oStream.is_open()) {
+			oStream << "[" << getTimestamp() << "] "
 				<< message << '\n';
 		}
 	}

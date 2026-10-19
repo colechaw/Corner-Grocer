@@ -17,13 +17,12 @@
 // Prototype
 void clearScreen();
 void pause(std::string message);
-void error(std::string message);
+void error(std::string message, std::string errorMessage);
 int validateInput(std::string prompt);
 
 int main() {
 	int userSelection = 0;
 	ItemTracker itemTracker;
-
 	itemTracker.loadFile("items.txt");
 
 	while (true) {
@@ -55,10 +54,16 @@ int validateInput(std::string prompt) {
 
 		// Make sure they entered a positive number less than 5
 		if (!std::cin.fail() && userInput >= 1 && userInput <= 4) {
+			
+			// Clear buffer if user entered letters after number, still accept the number if vaild choice
+			std::cin.ignore(
+				std::numeric_limits<std::streamsize>::max(), '\n'
+			);
+
 			return userInput;
 		}
 
-		error("Please enter a valid menu choice"); // Custom helper
+		error("Please enter a valid menu choice", "Incorrect menu selection"); // Custom helper
 	}
 }
 
@@ -81,7 +86,7 @@ void pause(std::string message) {
 
 // Helper : Handles an input error by reseting the input stream
 // Does not catch the error, simplifies recovering from it.
-void error(std::string message) {
+void error(std::string message, std::string errorMessage = "Undefined error") {
 	
 	std::cin.clear(); // Reset the input stream
 
@@ -94,5 +99,5 @@ void error(std::string message) {
 	std::cout << AnsiColor::colorize(Color::Red, message) << std::endl;
 
 	// Record in error.log
-	Logger::error("User Selection: " + message);
+	Logger::error("Runtime Error: " + errorMessage);
 }

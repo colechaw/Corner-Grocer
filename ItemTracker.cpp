@@ -36,7 +36,7 @@ void ItemTracker::loadFile(std::string fileName) {
 
 	if (inFS.is_open()) {
 
-		Logger::event(fileName + " successfully opened.");
+		Logger::event(fileName + " successfully opened."); // log event
 
 		while (inFS >> name) {			
 			inventory_[name]++; // Add to map, or increase count
@@ -52,11 +52,11 @@ void ItemTracker::loadFile(std::string fileName) {
 		}
 
 		inFS.close();
-		Logger::event(fileName + " closed.");
+		Logger::event(fileName + " closed."); // log event
 		saveDat(); // Create Dat File
 	}
 	else {
-		Logger::error("ERROR- unable to open " + fileName + " file");
+		Logger::error("ERROR- unable to open " + fileName + " file"); // log ERROR
 	}
 }
 
@@ -66,9 +66,10 @@ void ItemTracker::saveDat() {
 	// Create a file 'frequency.dat' after opening a stream
 	std::ofstream oFS;
 	oFS.open("frequency.dat");
-	Logger::event("frequency.dat successfully created."); // log event
 
 	if (oFS.is_open()) {
+
+		Logger::event("frequency.dat successfully created."); // log event
 
 			for (const auto& item : inventory_) {
 				oFS << item.first << " ";
@@ -80,7 +81,7 @@ void ItemTracker::saveDat() {
 		Logger::event("frequency.dat saved."); // log event
 	}
 	else {
-		Logger::error("ERROR: frequency.dat failed to open."); // log event
+		Logger::error("ERROR: frequency.dat failed to open."); // log ERROR
 	}
 }
 
@@ -97,16 +98,18 @@ void ItemTracker::printItemByName() {
 	// This allows multiple capitalization to all return the correct value
 	std::string searchName = toLower(itemName);
 
+	// ** Validation **
+	// Display a meaningful message rather than blank page
+	if (inventory_.empty()) {
+		std::cout << "\nNo inventory data available.\n";
+		Logger::error("Empty inventory_ in Name Search"); // log ERROR
+		return;
+	}
+
 	// Loop through the inventory_ comparing the search word to the name in the map in
 	// lower case form
 	for (const auto& [name, quantity] : inventory_) {
 
-		// ** Validation **
-		// Display a meaningful message rather than blank page
-		if (inventory_.empty()) {
-			std::cout << "\nNo inventory data available.\n";
-			return;
-		}
 
 		if (toLower(name) == searchName) {
 			std::cout << " " << name << ": " << quantity << std::endl;
@@ -135,17 +138,19 @@ void ItemTracker::printList() const {
 	// Title
 	std::cout << "Numeric List\n" << std::endl;
 
+	// ** Validation **
+	// Display a meaningful message rather than blank page
+	if (inventory_.empty()) {
+		std::cout << "\nNo inventory data available.\n";
+		Logger::error("Empty inventory_ in List Report"); // log ERROR
+		return;
+	}
+
 	// Print each line, name and then the number on hand.
 	// Center all numbers on each other for readability
 	for (const auto& [name, quantity] : inventory_) {
 
 
-		// ** Validation **
-		// Display a meaningful message rather than blank page
-		if (inventory_.empty()) {
-			std::cout << "\nNo inventory data available.\n";
-			return;
-		}
 
 		std::cout << " "
 				  << std::left << std::setw(15) << name
@@ -162,15 +167,16 @@ void ItemTracker::printHistogram() const {
 	// Title
 	std::cout << "Histogram\n" << std::endl;
 
+	// ** Validation **
+	// Display a meaningful message rather than blank page
+	if (inventory_.empty()) {
+		std::cout << "\nNo inventory data available.\n";
+		Logger::error("Empty inventory_ in Histogram Report"); // log ERROR
+		return;
+	}
 
 	for (const auto& [name, quantity] : inventory_) {
 		
-		// ** Validation **
-		// Display a meaningful message rather than blank page
-		if (inventory_.empty()) {
-			std::cout << "\nNo inventory data available.\n";
-			return;
-		}
 
 		std::cout << " "
 			<< std::left << std::setw(15) << name
@@ -196,8 +202,8 @@ std::string ItemTracker::colorizeByQuantity(std::string text, int quantity) cons
 }
 
 
-// Accept input and return as all lower case to prevent
-// errors in user capitaliztion
+// Call char tolower() on each char in the string
+// creating an easy way to capitalize entire strings
 ////////////////// cast<> Resoning handle unexpected behavior if char is negative
 std::string ItemTracker::toLower(std::string originalText) {
 

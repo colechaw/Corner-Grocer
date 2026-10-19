@@ -14,10 +14,7 @@
 
 class ItemTracker {
 	public:
-		void printList() const;
-		void printHistogram() const;
 		void printMenu() const;
-		void printItemByName();
 		void loadFile(std::string fileName);
 		void runReport(int userInput);
 
@@ -25,6 +22,9 @@ class ItemTracker {
 		std::map<std::string, int> inventory_;
 
 		// Private Functions
+		void printItemByName();
+		void printList() const;
+		void printHistogram() const;
 		void saveDat();
 		std::string colorizeByQuantity(std::string text, int quantity) const;
 		std::string toLower(std::string originalText);

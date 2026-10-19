@@ -20,8 +20,6 @@ class AnsiColor {
 
     public:
         // Returns text wrapped in color codes. Original string is unchanged.
-        // This will not print to screen, that is handled in the main().  
-        // The color may be used in main or ItemTracker
         static std::string colorize(Color color, const std::string& text) {
             return getCode(color) + text + "\033[0m";
         }
